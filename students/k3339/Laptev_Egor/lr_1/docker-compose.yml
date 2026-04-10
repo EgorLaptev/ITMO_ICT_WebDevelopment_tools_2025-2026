@@ -1,26 +1,10 @@
 version: "3.9"
 
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: warriors_db
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
   web:
     build: .
-    depends_on:
-      - db
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://postgres:123@db/warriors_db
-    volumes:
-      - ./practice:/app/practice
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 volumes:
