@@ -12,6 +12,7 @@ class RaceType(Enum):
 class SkillWarriorLink(SQLModel, table=True):
     skill_id: Optional[int] = Field(default=None, foreign_key="skill.id", primary_key=True)
     warrior_id: Optional[int] = Field(default=None, foreign_key="warrior.id", primary_key=True)
+    level: int | None
 
 
 class Skill(SQLModel, table=True):
