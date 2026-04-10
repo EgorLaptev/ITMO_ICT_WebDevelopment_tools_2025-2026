@@ -1,0 +1,15 @@
+FROM python:3.14-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY practice/ ./practice/
+WORKDIR /app/practice
+
+ENV PYTHONUNBUFFERED=1
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
