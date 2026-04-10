@@ -3,16 +3,16 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from app.core.security import get_current_user
-from app.database import get_session
-from app.schemas.submission import SubmissionCreate, SubmissionRead
-from app.services.submission_service import (
+from app.auth.dependencies import get_current_user
+from app.crud.submission import (
     create_submission,
     delete_submission,
     get_submission,
     list_submissions,
     update_submission,
 )
+from app.database import get_session
+from app.schemas.submission import SubmissionCreate, SubmissionRead
 
 router = APIRouter(tags=["submissions"])
 

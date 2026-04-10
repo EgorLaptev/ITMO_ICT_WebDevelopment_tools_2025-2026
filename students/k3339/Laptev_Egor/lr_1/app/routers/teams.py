@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from app.core.security import get_current_user, require_role
+from app.auth.dependencies import get_current_user, require_role
+from app.crud.team import create_team, delete_team, get_team, join_team, list_teams, update_team
 from app.database import get_session
 from app.schemas.team import TeamCreate, TeamJoinRequest, TeamRead
-from app.services.team_service import create_team, delete_team, get_team, join_team, list_teams, update_team
 
 router = APIRouter(tags=["teams"])
 

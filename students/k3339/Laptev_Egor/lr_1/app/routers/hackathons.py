@@ -3,16 +3,16 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from app.core.security import get_current_user, require_role
-from app.database import get_session
-from app.schemas.hackathon import HackathonCreate, HackathonRead
-from app.services.hackathon_service import (
+from app.auth.dependencies import get_current_user, require_role
+from app.crud.hackathon import (
     create_hackathon,
     delete_hackathon,
     get_hackathon,
     list_hackathons,
     update_hackathon,
 )
+from app.database import get_session
+from app.schemas.hackathon import HackathonCreate, HackathonRead
 
 router = APIRouter(tags=["hackathons"])
 

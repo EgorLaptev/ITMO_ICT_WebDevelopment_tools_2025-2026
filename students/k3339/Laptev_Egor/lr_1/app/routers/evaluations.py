@@ -3,16 +3,16 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from app.core.security import get_current_user, require_role
-from app.database import get_session
-from app.schemas.evaluation import EvaluationCreate, EvaluationRead
-from app.services.evaluation_service import (
+from app.auth.dependencies import get_current_user, require_role
+from app.crud.evaluation import (
     create_evaluation,
     delete_evaluation,
     get_evaluation,
     list_evaluations,
     update_evaluation,
 )
+from app.database import get_session
+from app.schemas.evaluation import EvaluationCreate, EvaluationRead
 
 router = APIRouter(tags=["evaluations"])
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.core.config import settings
+from app.config import settings
 from app.database import engine, SQLModel
 from app.routers import auth, evaluations, hackathons, submissions, tasks, teams, users
 

@@ -3,10 +3,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session
 
-from app.core.security import get_current_user, require_role
+from app.auth.dependencies import get_current_user, require_role
+from app.crud.task import create_task, delete_task, get_task, list_tasks, update_task
 from app.database import get_session
 from app.schemas.task import TaskCreate, TaskReadSimple
-from app.services.task_service import create_task, delete_task, get_task, list_tasks, update_task
 
 router = APIRouter(tags=["tasks"])
 

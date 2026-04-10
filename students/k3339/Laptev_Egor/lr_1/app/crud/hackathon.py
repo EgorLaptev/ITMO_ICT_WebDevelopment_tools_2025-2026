@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.models.hackathon import Hackathon
-from app.schemas.hackathon import HackathonCreate, HackathonBase
+from app.schemas.hackathon import HackathonBase, HackathonCreate
 
 
 def create_hackathon(session: Session, hackathon_in: HackathonCreate) -> Hackathon:

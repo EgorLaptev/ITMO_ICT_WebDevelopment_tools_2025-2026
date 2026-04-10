@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
-from app.core.security import create_access_token, get_current_user, verify_password
+from app.auth.dependencies import get_current_user
+from app.auth.hashing import verify_password
+from app.auth.jwt import create_access_token
+from app.crud.user import authenticate_user, create_user, change_password
 from app.database import get_session
 from app.schemas.auth import ChangePasswordRequest, UserRegister
 from app.schemas.token import Token
 from app.schemas.user import UserRead
-from app.services.user_service import authenticate_user, create_user, change_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
