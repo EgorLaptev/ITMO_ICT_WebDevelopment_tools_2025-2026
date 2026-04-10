@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from typing import List, TypedDict
 from sqlmodel import select
-from practice.app.models import Warrior, WarriorDefault, Profession, WarriorProfessions
-from practice.app.db import init_db, get_session
+from app.models import Warrior, WarriorDefault, Profession, WarriorProfessions
+from app.db import init_db, get_session
 
 app = FastAPI()
 
