@@ -12,6 +12,26 @@ services:
       POSTGRES_DB: hackathon_db
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hackathon_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: "true"
+      CREATE_TABLES_ON_STARTUP: "true"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:

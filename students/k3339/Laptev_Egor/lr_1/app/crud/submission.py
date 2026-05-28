@@ -8,7 +8,7 @@ from app.schemas.submission import SubmissionCreate
 
 
 async def create_submission(session: AsyncSession, submission_in: SubmissionCreate) -> Submission:
-    submission = Submission.from_orm(submission_in)
+    submission = Submission(**submission_in.model_dump(mode="json"))
     session.add(submission)
     await session.commit()
     await session.refresh(submission)

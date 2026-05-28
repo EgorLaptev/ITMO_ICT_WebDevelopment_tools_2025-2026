@@ -3,15 +3,17 @@ import time
 import os
 
 
-N = 10_000_000_000_000
+N = 100_000_000
 WORKERS = os.cpu_count() or 4
 
 
 async def calculate_sum(start: int, end: int) -> int:
-    await asyncio.sleep(0)
+    total = 0
 
-    count = end - start + 1
-    return (start + end) * count // 2
+    for number in range(start, end + 1):
+        total += number
+
+    return total
 
 
 def split_range(n: int, parts: int) -> list[tuple[int, int]]:

@@ -3,13 +3,17 @@ import time
 import os
 
 
-N = 10_000_000_000_000
+N = 100_000_000
 WORKERS = os.cpu_count() or 4
 
 
 def calculate_sum(start: int, end: int) -> int:
-    count = end - start + 1
-    return (start + end) * count // 2
+    total = 0
+
+    for number in range(start, end + 1):
+        total += number
+
+    return total
 
 
 def split_range(n: int, parts: int) -> list[tuple[int, int]]:

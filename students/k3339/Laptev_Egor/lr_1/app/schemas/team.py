@@ -31,4 +31,3 @@ class TeamRead(BaseModel):
     id: int
     name: str
     hackathon_id: int
-    members: List[TeamMemberRead] = []

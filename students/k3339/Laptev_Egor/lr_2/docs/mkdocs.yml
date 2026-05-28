@@ -1,9 +1,0 @@
-site_name: Лабораторная работа 2. Потоки. Процессы. Асинхронность.
-site_author: Лаптев Егор
-site_description: Отчёт по лабораторной работе 2. Потоки. Процессы. Асинхронность.
-nav:
-  - Home: index.md
-  - Task 1: t1.md
-  - Task 2: t2.md
-theme:
-  name: material
