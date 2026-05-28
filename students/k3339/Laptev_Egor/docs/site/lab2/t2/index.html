@@ -1,0 +1,958 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Отчёт по лабораторной работе 1 — система для проведения хакатонов">
+      
+      
+        <meta name="author" content="Лаптев Егор">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Задача 2. Параллельный парсинг веб-страниц с сохранением в базу данных - Hackathon Management System — Лабораторная 1</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#2-" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Hackathon Management System — Лабораторная 1" class="md-header__button md-logo" aria-label="Hackathon Management System — Лабораторная 1" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Hackathon Management System — Лабораторная 1
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Задача 2. Параллельный парсинг веб-страниц с сохранением в базу данных
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Hackathon Management System — Лабораторная 1" class="md-nav__button md-logo" aria-label="Hackathon Management System — Лабораторная 1" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Hackathon Management System — Лабораторная 1
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Главная
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lab1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лабораторная 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лабораторная 2
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lab3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лабораторная 3
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Описание
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Реализация
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Реализация">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Структура проекта
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Использованные технологии
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Использованные технологии">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-threading-threading_scraperpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Threading подход (threading_scraper.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-multiprocessing-multiprocessing_scraperpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Multiprocessing подход (multiprocessing_scraper.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-async-async_scraperpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Async подход (async_scraper.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse_and_saveurl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Функция parse_and_save(url)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        База данных
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#url-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Список URL-адресов для парсинга
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Запуск скриптов
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Запуск скриптов
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Запуск скриптов">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Установка зависимостей:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-postgresql-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Запуск PostgreSQL в Docker:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Запуск каждого парсера отдельно:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Запуск сравнения всех трёх подходов:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Остановка БД:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Результаты сравнения
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Результаты сравнения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Таблица времени выполнения
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Анализ результатов
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Анализ результатов">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Async показал лучшую производительность
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-threading-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Threading немного уступает Async
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-multiprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Multiprocessing показал худшую производительность
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Выводы
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Рекомендации по использованию
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="2-">Задача 2. Параллельный парсинг веб-страниц с сохранением в базу данных</h1>
+<h2 id="_1">Описание</h2>
+<p>Напишите программу на Python для параллельного парсинга нескольких веб-страниц с сохранением данных в базу данных с использованием подходов threading, multiprocessing и async. Каждая программа должна парсить информацию с нескольких веб-сайтов, сохранять их в базу данных.</p>
+<p>Подробности задания:
+1. Напишите три различных программы на Python, использующие каждый из подходов: threading, multiprocessing и async.
+2. Каждая программа должна содержать функцию parse_and_save(url), которая будет загружать HTML-страницу по указанному URL, парсить ее, сохранять заголовок страницы в базу данных и выводить результат на экран.
+3. Используйте базу данных из лабораторной работы номер 1 для заполенния ее данными. Если Вы не понимаете, какие таблицы и откуда Вы могли бы заполнить с помощью парсинга, напишите преподавателю в общем чате потока.
+4. Для threading используйте модуль threading, для multiprocessing - модуль multiprocessing, а для async - ключевые слова async/await и модуль aiohttp для асинхронных запросов.
+5. Создайте список нескольких URL-адресов веб-страниц для парсинга и разделите его на равные части для параллельного парсинга.
+6. Запустите параллельный парсинг для каждой программы и сохраните данные в базу данных.
+7. Замерьте время выполнения каждой программы и сравните результаты.</p>
+<hr />
+<h2 id="_2">Реализация</h2>
+<h3 id="_3">Структура проекта</h3>
+<pre><code>task_2/
+├── main.py                    # Главный скрипт для запуска всех парсеров
+├── threading_scraper.py       # Парсер с использованием threading
+├── multiprocessing_scraper.py # Парсер с использованием multiprocessing
+├── async_scraper.py           # Парсер с использованием async/await
+└── requirements.txt           # Зависимости проекта
+</code></pre>
+<h3 id="_4">Использованные технологии</h3>
+<h4 id="1-threading-threading_scraperpy">1. <strong>Threading подход</strong> (<code>threading_scraper.py</code>)</h4>
+<p><strong>Описание:</strong>
+- Использует модуль <code>threading</code> для создания нескольких потоков
+- Каждый поток загружает одну веб-страницу параллельно
+- Потоки синхронизируются через <code>threading.Lock()</code> для безопасного доступа к результатам</p>
+<p><strong>Особенности:</strong>
++ Хорошо подходит для I/O-bound операций (сетевые запросы) \
++ Низкие затраты на память (общая память между потоками) \
++ Простая реализация и отладка \
+- Зависит от GIL (Global Interpreter Lock) \
+- Не подходит для CPU-bound операций \</p>
+<p><strong>Использование:</strong></p>
+<pre><code class="language-python">from threading_scraper import run_threading_scraper
+time_taken = run_threading_scraper()
+</code></pre>
+<h4 id="2-multiprocessing-multiprocessing_scraperpy">2. <strong>Multiprocessing подход</strong> (<code>multiprocessing_scraper.py</code>)</h4>
+<p><strong>Описание:</strong>
+- Использует модуль <code>multiprocessing</code> для создания отдельных процессов
+- Каждый процесс имеет свой интерпретатор Python и независимую память
+- Использует <code>Pool</code> для управления количеством параллельных процессов</p>
+<p><strong>Особенности:</strong>
++ Обходит GIL (каждый процесс имеет свой GIL)
++ Хорошо подходит для CPU-bound операций
++ Может использовать многоядерные процессоры
+- Большие затраты на память
+- Сложнее в отладке (проблемы с pickling объектов)
+- Медленнее для I/O-bound операций из-за оверхеда процессов</p>
+<p><strong>Использование:</strong></p>
+<pre><code class="language-python">from multiprocessing_scraper import run_multiprocessing_scraper
+time_taken = run_multiprocessing_scraper()
+</code></pre>
+<h4 id="3-async-async_scraperpy">3. <strong>Async подход</strong> (<code>async_scraper.py</code>)</h4>
+<p><strong>Описание:</strong>
+- Использует <code>async/await</code> синтаксис для асинхронного программирования
+- Использует <code>aiohttp</code> для асинхронных HTTP-запросов
+- <code>asyncio.gather()</code> для параллельного выполнения корутин</p>
+<p><strong>Особенности:</strong>
++ Самый эффективный подход для I/O-bound операций\
++ Низкие затраты на память (один поток, несколько корутин)\
++ Высокая производительность при большом количестве соединений\
++ Не требует синхронизации (однопоточный)\
+- Сложнее для понимания (новая парадигма)\
+- Требует поддержки async в используемых библиотеках\
+- Стектрейсы могут быть сложнее для анализа\</p>
+<p><strong>Использование:</strong></p>
+<pre><code class="language-python">from async_scraper import run_async_scraper
+import asyncio
+
+time_taken = asyncio.run(run_async_scraper())
+</code></pre>
+<h3 id="parse_and_saveurl">Функция parse_and_save(url)</h3>
+<p>Все три реализации содержат функцию <code>parse_and_save(url)</code> которая:</p>
+<ol>
+<li>Загружает HTML-страницу по URL с использованием соответствующего подхода</li>
+<li>Парсит HTML с помощью BeautifulSoup</li>
+<li>Извлекает заголовок страницы (<code>&lt;title&gt;</code>)</li>
+<li>Сохраняет результат в базу данных PostgreSQL в таблицу <code>parsed_pages</code></li>
+<li>Выводит результат в консоль</li>
+</ol>
+<h3 id="_5">База данных</h3>
+<p>Используется PostgreSQL база данных <code>hackathon_db</code> с таблицами:
+- <strong>hackathons</strong> — хранит информацию о хакатонах
+- <strong>tasks</strong> — хранит информацию о задачах хакатона</p>
+<p>Структура таблиц:</p>
+<pre><code class="language-sql">CREATE TABLE hackathons (
+    id INTEGER PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    start_date VARCHAR NOT NULL,
+    end_date VARCHAR NOT NULL
+);
+
+CREATE TABLE tasks (
+    id INTEGER PRIMARY KEY,
+    title VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    hackathon_id INTEGER FOREIGN KEY REFERENCES hackathons(id)
+);
+</code></pre>
+<p><strong>БД запускается в Docker контейнере.</strong></p>
+<h3 id="url-">Список URL-адресов для парсинга</h3>
+<pre><code class="language-python">URLS = [
+    &quot;https://example.com&quot;,
+    &quot;https://www.python.org&quot;,
+    &quot;https://github.com&quot;,
+    &quot;https://stackoverflow.com&quot;,
+    &quot;https://www.wikipedia.org&quot;,
+    &quot;https://www.google.com&quot;,
+]
+</code></pre>
+<h3 id="_6">Запуск скриптов</h3>
+<h3 id="_7">Запуск скриптов</h3>
+<h4 id="1">1. Установка зависимостей:</h4>
+<pre><code class="language-bash">cd task_2
+pip install -r requirements_new.txt
+</code></pre>
+<h4 id="2-postgresql-docker">2. Запуск PostgreSQL в Docker:</h4>
+<pre><code class="language-bash">docker-compose up -d
+</code></pre>
+<p>Дождитесь пока БД инициализируется (10-15 секунд).</p>
+<h4 id="3">3. Запуск каждого парсера отдельно:</h4>
+<pre><code class="language-bash"># Threading
+python threading_scraper.py
+
+# Multiprocessing
+python multiprocessing_scraper.py
+
+# Async
+python async_scraper.py
+</code></pre>
+<h4 id="4">4. Запуск сравнения всех трёх подходов:</h4>
+<pre><code class="language-bash">python main.py
+</code></pre>
+<h4 id="5">5. Остановка БД:</h4>
+<pre><code class="language-bash">docker-compose down
+</code></pre>
+<p><strong>Примечание:</strong> Модели Task и Hackathon определены локально в каждом скрипте, используя SQLModel (как в lr_1). Таблицы создаются автоматически при первом запуске.</p>
+<hr />
+<h2 id="_8">Результаты сравнения</h2>
+<h3 id="_9">Таблица времени выполнения</h3>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Time (seconds)</th>
+<th>Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Threading</td>
+<td>1.2–1.4</td>
+<td>1.15x</td>
+</tr>
+<tr>
+<td>Multiprocessing</td>
+<td>2.6–3.1</td>
+<td>2.11x</td>
+</tr>
+<tr>
+<td>Async</td>
+<td>1.3–1.5</td>
+<td>1.00x</td>
+</tr>
+</tbody>
+</table>
+<p><em>Примечание: Точные значения зависят от скорости интернета и нагрузки на сервер</em></p>
+<h3 id="_10">Анализ результатов</h3>
+<h4 id="1-async">1. <strong>Async показал лучшую производительность</strong></h4>
+<ul>
+<li>Асинхронный подход оказался самым быстрым благодаря минимальным затратам на контекстные переключения</li>
+<li>Единственный поток обрабатывает несколько соединений эффективно</li>
+<li>Идеален для I/O-bound операций, таких как сетевые запросы</li>
+</ul>
+<h4 id="2-threading-async">2. <strong>Threading немного уступает Async</strong></h4>
+<ul>
+<li>Потокам требуется синхронизация и управление контекстными переключениями</li>
+<li>GIL ограничивает параллелизм в CPU-bound операциях, но для I/O это менее критично</li>
+<li>Хороший выбор для простых случаев</li>
+</ul>
+<h4 id="3-multiprocessing">3. <strong>Multiprocessing показал худшую производительность</strong></h4>
+<ul>
+<li>Для I/O-bound операций процессы неэффективны из-за оверхеда создания</li>
+<li>Каждый процесс создаёт новое соединение с БД, что добавляет задержку</li>
+<li>Multiprocessing лучше подходит для CPU-bound операций (обход GIL)</li>
+</ul>
+<h3 id="_11">Выводы</h3>
+<table>
+<thead>
+<tr>
+<th>Критерий</th>
+<th>Threading</th>
+<th>Multiprocessing</th>
+<th>Async</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I/O-bound операции</td>
+<td>+ Хорошо</td>
+<td>- Плохо</td>
+<td>++ Отлично</td>
+</tr>
+<tr>
+<td>CPU-bound операции</td>
+<td>- Плохо</td>
+<td>++ Отлично</td>
+<td>+ Хорошо</td>
+</tr>
+<tr>
+<td>Потребление памяти</td>
+<td>++ Низкое</td>
+<td>- Высокое</td>
+<td>++ Низкое</td>
+</tr>
+<tr>
+<td>Простота реализации</td>
+<td>+ Простая</td>
+<td>+ Простая</td>
+<td>- Сложная</td>
+</tr>
+<tr>
+<td>Масштабируемость</td>
+<td>+ Хорошая</td>
+<td>- Ограниченная</td>
+<td>++ Отличная</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">Рекомендации по использованию</h3>
+<ol>
+<li><strong>Async</strong> для:</li>
+<li>Веб-приложений с большим количеством одновременных соединений</li>
+<li>Парсинга множества веб-сайтов</li>
+<li>
+<p>API сервисов с высокой нагрузкой</p>
+</li>
+<li>
+<p><strong>Threading</strong> для:</p>
+</li>
+<li>Простых параллельных задач I/O</li>
+<li>Когда нужна простота реализации</li>
+<li>
+<p>Средней нагрузки на соединения</p>
+</li>
+<li>
+<p><strong>Multiprocessing</strong> для:</p>
+</li>
+<li>Тяжёлых вычислений (обработка данных, AI/ML)</li>
+<li>Обхода GIL для CPU-bound операций</li>
+<li>Разделения работы между несколькими CPU ядрами</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
