@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.auth.dependencies import get_current_user, require_role
 from app.crud.hackathon import (
@@ -14,51 +14,51 @@ from app.crud.hackathon import (
 from app.database import get_session
 from app.schemas.hackathon import HackathonCreate, HackathonRead
 
-router = APIRouter(tags=["hackathons"])
+router = APIRouter(tags=['hackathons'])
 
 
-@router.get("/", response_model=List[HackathonRead])
-def read_hackathons(session: Session = Depends(get_session)) -> List[HackathonRead]:
-    return list_hackathons(session)
+@router.get('/', response_model=List[HackathonRead])
+async def read_hackathons(session: AsyncSession = Depends(get_session)) -> List[HackathonRead]:
+    return await list_hackathons(session)
 
 
-@router.post("/", response_model=HackathonRead)
-def create_hackathon_route(
+@router.post('/', response_model=HackathonRead)
+async def create_hackathon_route(
     hackathon_in: HackathonCreate,
-    session: Session = Depends(get_session),
-    current_user=Depends(require_role("organizer")),
+    session: AsyncSession = Depends(get_session),
+    current_user=Depends(require_role('organizer')),
 ) -> HackathonRead:
-    return create_hackathon(session, hackathon_in)
+    return await create_hackathon(session, hackathon_in)
 
 
-@router.get("/{hackathon_id}", response_model=HackathonRead)
-def read_hackathon(hackathon_id: int, session: Session = Depends(get_session)) -> HackathonRead:
-    hackathon = get_hackathon(session, hackathon_id)
+@router.get('/{hackathon_id}', response_model=HackathonRead)
+async def read_hackathon(hackathon_id: int, session: AsyncSession = Depends(get_session)) -> HackathonRead:
+    hackathon = await get_hackathon(session, hackathon_id)
     if not hackathon:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hackathon not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Hackathon not found')
     return hackathon
 
 
-@router.put("/{hackathon_id}", response_model=HackathonRead)
-def update_hackathon_route(
+@router.put('/{hackathon_id}', response_model=HackathonRead)
+async def update_hackathon_route(
     hackathon_id: int,
     hackathon_in: HackathonCreate,
-    session: Session = Depends(get_session),
-    current_user=Depends(require_role("organizer")),
+    session: AsyncSession = Depends(get_session),
+    current_user=Depends(require_role('organizer')),
 ) -> HackathonRead:
-    updated = update_hackathon(session, hackathon_id, hackathon_in)
+    updated = await update_hackathon(session, hackathon_id, hackathon_in)
     if not updated:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hackathon not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Hackathon not found')
     return updated
 
 
-@router.delete("/{hackathon_id}")
-def delete_hackathon_route(
+@router.delete('/{hackathon_id}')
+async def delete_hackathon_route(
     hackathon_id: int,
-    session: Session = Depends(get_session),
-    current_user=Depends(require_role("organizer")),
+    session: AsyncSession = Depends(get_session),
+    current_user=Depends(require_role('organizer')),
 ) -> dict:
-    success = delete_hackathon(session, hackathon_id)
+    success = await delete_hackathon(session, hackathon_id)
     if not success:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Hackathon not found")
-    return {"ok": True}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Hackathon not found')
+    return {'ok': True}

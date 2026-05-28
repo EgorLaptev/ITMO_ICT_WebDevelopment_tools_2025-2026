@@ -1,6 +1,8 @@
 from typing import List, Optional
 from typing import TYPE_CHECKING
 
+from datetime import datetime
+
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -14,8 +16,8 @@ class Hackathon(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     description: str
-    start_date: str
-    end_date: str
+    start_date: datetime
+    end_date: datetime
 
     teams: List["Team"] = Relationship(back_populates="hackathon")
     tasks: List["Task"] = Relationship(back_populates="hackathon")

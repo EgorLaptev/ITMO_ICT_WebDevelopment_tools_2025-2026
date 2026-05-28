@@ -1,27 +1,30 @@
 from typing import List, Optional
 
-from sqlmodel import Session, select
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.auth.hashing import get_password_hash, verify_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 
 
-def get_user(session: Session, user_id: int) -> Optional[User]:
-    return session.get(User, user_id)
+async def get_user(session: AsyncSession, user_id: int) -> Optional[User]:
+    return await session.get(User, user_id)
 
 
-def get_user_by_email(session: Session, email: str) -> Optional[User]:
+async def get_user_by_email(session: AsyncSession, email: str) -> Optional[User]:
     statement = select(User).where(User.email == email)
-    return session.exec(statement).one_or_none()
+    result = await session.exec(statement)
+    return result.one_or_none()
 
 
-def list_users(session: Session, offset: int = 0, limit: int = 100) -> List[User]:
+async def list_users(session: AsyncSession, offset: int = 0, limit: int = 100) -> List[User]:
     statement = select(User).offset(offset).limit(limit)
-    return session.exec(statement).all()
+    result = await session.exec(statement)
+    return result.all()
 
 
-def create_user(session: Session, user_in: UserCreate) -> User:
+async def create_user(session: AsyncSession, user_in: UserCreate) -> User:
     user = User(
         email=user_in.email,
         name=user_in.name,
@@ -29,13 +32,13 @@ def create_user(session: Session, user_in: UserCreate) -> User:
         password_hash=get_password_hash(user_in.password),
     )
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    await session.commit()
+    await session.refresh(user)
     return user
 
 
-def authenticate_user(session: Session, email: str, password: str) -> Optional[User]:
-    user = get_user_by_email(session, email)
+async def authenticate_user(session: AsyncSession, email: str, password: str) -> Optional[User]:
+    user = await get_user_by_email(session, email)
     if not user:
         return None
     if not verify_password(password, user.password_hash):
@@ -43,22 +46,22 @@ def authenticate_user(session: Session, email: str, password: str) -> Optional[U
     return user
 
 
-def update_user(session: Session, user_id: int, user_in: UserUpdate) -> Optional[User]:
-    user = get_user(session, user_id)
+async def update_user(session: AsyncSession, user_id: int, user_in: UserUpdate) -> Optional[User]:
+    user = await get_user(session, user_id)
     if not user:
         return None
     user_data = user_in.dict(exclude_unset=True)
     for key, value in user_data.items():
         setattr(user, key, value)
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    await session.commit()
+    await session.refresh(user)
     return user
 
 
-def change_password(session: Session, user: User, raw_password: str) -> User:
+async def change_password(session: AsyncSession, user: User, raw_password: str) -> User:
     user.password_hash = get_password_hash(raw_password)
     session.add(user)
-    session.commit()
-    session.refresh(user)
+    await session.commit()
+    await session.refresh(user)
     return user
