@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../lab1/">
       
       
-        <link rel="next" href="../pr2/">
+        <link rel="next" href="../lab3/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Практика 1 - Hackathon Management System — Лабораторная 1</title>
+        <title>Лабораторная 2 - Hackathon Management System — Лабораторная 1</title>
       
     
     
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#1-fastapi-crud" class="md-skip">
+        <a href="#2" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Практика 1
+              Лабораторная 2
             
           </span>
         </div>
@@ -224,6 +224,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../lab1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лабораторная 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -243,7 +270,7 @@
   <span class="md-ellipsis">
     
   
-    Практика 1
+    Лабораторная 2
   
 
     
@@ -261,7 +288,7 @@
   <span class="md-ellipsis">
     
   
-    Практика 1
+    Лабораторная 2
   
 
     
@@ -287,32 +314,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#modelspy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Модели (models.py)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-endpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Endpoints
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Запуск
+        Описание
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Структура
       
     </span>
   </a>
@@ -334,68 +350,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../pr2/" class="md-nav__link">
+      <a href="../lab3/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Практика 2
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../pr3/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Практика 3
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../lr1/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Лабораторная 1
+    Лабораторная 3
   
 
     
@@ -435,32 +397,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#modelspy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Модели (models.py)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-endpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        API Endpoints
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Запуск
+        Описание
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Структура
       
     </span>
   </a>
@@ -484,71 +435,17 @@
 
 
 
-<h1 id="1-fastapi-crud">Практика 1 — FastAPI CRUD</h1>
-<p>CRUD-приложение с хранением данных в памяти (без БД). Демонстрирует базовые возможности FastAPI и Pydantic-модели с вложенными объектами.</p>
-<h2 id="modelspy">Модели (<code>models.py</code>)</h2>
-<pre><code class="language-python">class RaceType(Enum):
-    director = &quot;director&quot;
-    worker = &quot;worker&quot;
-    junior = &quot;junior&quot;
-
-
-class SkillWarriorLink(SQLModel, table=True):
-    skill_id: Optional[int] = Field(default=None, foreign_key=&quot;skill.id&quot;, primary_key=True)
-    warrior_id: Optional[int] = Field(default=None, foreign_key=&quot;warrior.id&quot;, primary_key=True)
-    level: int | None
-
-
-class Skill(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
-    name: str
-    description: Optional[str] = &quot;&quot;
-    warriors: Optional[List[&quot;Warrior&quot;]] = Relationship(
-        back_populates=&quot;skills&quot;, link_model=SkillWarriorLink
-    )
-
-
-class Profession(SQLModel, table=True):
-    id: int = Field(default=None, primary_key=True)
-    title: str
-    description: str
-    warriors_prof: List[&quot;Warrior&quot;] = Relationship(back_populates=&quot;profession&quot;)
-
-
-class WarriorDefault(SQLModel):
-    race: RaceType
-    name: str
-    level: int
-    profession_id: Optional[int] = Field(default=None, foreign_key=&quot;profession.id&quot;)
-
-
-class Warrior(WarriorDefault, table=True):
-    id: int = Field(default=None, primary_key=True)
-    profession: Optional[Profession] = Relationship(back_populates=&quot;warriors_prof&quot;)
-    skills: Optional[List[Skill]] = Relationship(
-        back_populates=&quot;warriors&quot;, link_model=SkillWarriorLink
-    )
-
-
-class WarriorProfessions(WarriorDefault):
-    profession: Optional[Profession] = None
-</code></pre>
-<h2 id="api-endpoints">API Endpoints</h2>
+<h1 id="2">Лабораторная работа 2. Потоки. Процессы. Асинхронность.</h1>
+<p><strong>Студент:</strong> Лаптев Егор, группа K3339<br />
+<strong>Репозиторий:</strong> <a href="https://github.com/EgorLaptev/ITMO_ICT_WebDevelopment_tools_2025-2026">GitHub</a></p>
+<p><strong>Цель работы</strong> — Понять отличия потоками и процессами и понять, что такое ассинхронность в Python.</p>
+<h2 id="_1">Описание</h2>
+<p>Работа о потоках, процессах и асинхронности поможет студентам развить навыки создания эффективных и быстродействующих программ, что важно для работы с большими объемами данных и выполнения вычислений. Этот опыт также подготавливает студентов к реальным проектам, где требуется использование многопоточности и асинхронности для эффективной обработки данных или взаимодействия с внешними сервисами. Вопросы про потоки, процессы и ассинхронность встречаются, как минимум, на половине собеседований на python-разработчика уровня middle и Выше.</p>
+<h2 id="_2">Структура</h2>
 <ul>
-<li>GET / — hello</li>
-<li>GET /warriors_list</li>
-<li>GET /warrior/{warrior_id}</li>
-<li>POST /warrior</li>
-<li>PATCH /warrior/{warrior_id}</li>
-<li>DELETE /warrior/{warrior_id}</li>
-<li>GET /professions_list</li>
-<li>GET /profession/{profession_id}</li>
-<li>POST /profession</li>
+<li><a href="t1/">Задача 1</a> — Различия между threading, multiprocessing и async в Python</li>
+<li><a href="t2/">Задача 2</a> — Параллельный парсинг веб-страниц с сохранением в базу данных</li>
 </ul>
-<h2 id="_1">Запуск</h2>
-<pre><code class="language-bash">pip install fastapi[all]
-uvicorn main:app --reload
-</code></pre>
 
 
 
