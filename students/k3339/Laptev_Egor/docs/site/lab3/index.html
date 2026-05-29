@@ -288,6 +288,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Лабораторная 3
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -304,6 +322,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-fastapi-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 1: Упаковка FastAPI приложения, базы данных и парсера данных в Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 2: Вызов парсера из FastAPI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 3: Вызов парсера из FastAPI через очередь
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Результат
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -329,6 +410,58 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-fastapi-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 1: Упаковка FastAPI приложения, базы данных и парсера данных в Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 2: Вызов парсера из FastAPI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-fastapi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Задача 3: Вызов парсера из FastAPI через очередь
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Результат
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -348,6 +481,185 @@
 <p><strong>Студент:</strong> Лаптев Егор, группа K3339<br />
 <strong>Репозиторий:</strong> <a href="https://github.com/EgorLaptev/ITMO_ICT_WebDevelopment_tools_2025-2026">GitHub</a></p>
 <p><strong>Цель работы</strong> —  Научиться упаковывать FastAPI приложение в Docker, интегрировать парсер данных с базой данных и вызывать парсер через API и очередь.</p>
+<h2 id="1-fastapi-docker">Задача 1: Упаковка FastAPI приложения, базы данных и парсера данных в Docker</h2>
+<p>Были подготовлены <code>Dockerfile</code> для основного FastAPI-приложения и отдельного сервиса парсера.
+В <code>Dockerfile</code> описаны базовый Python-образ, установка зависимостей, копирование исходного кода в контейнер и команда запуска приложения.</p>
+<p>Был создан <code>docker-compose.yml</code>, в котором описаны все необходимые сервисы: FastAPI-приложение, PostgreSQL, сервис парсера, Redis и Celery worker.</p>
+<p>Docker Compose используется для одновременного запуска всех контейнеров и настройки их взаимодействия внутри одной Docker-сети.</p>
+<pre><code class="language-yaml">version: &quot;3.9&quot;
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - &quot;5432:5432&quot;
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: hackathon_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U postgres -d postgres&quot;]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./lr_1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - &quot;8080:8000&quot;
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: &quot;true&quot;
+      CREATE_TABLES_ON_STARTUP: &quot;true&quot;
+      PARSER_SERVICE_URL: http://scraper:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      scraper:
+        condition: service_started
+
+  scraper:
+    build:
+      context: ./lr_2/task_2
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - &quot;8001:8001&quot;
+    environment:
+      DATABASE_URL: postgresql://postgres:123@db:5432/hackathon_db
+      DEBUG: &quot;true&quot;
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+</code></pre>
+<h2 id="2-fastapi">Задача 2: Вызов парсера из FastAPI</h2>
+<p>В основном FastAPI-приложении был добавлен endpoint, который принимает URL от клиента и отправляет HTTP-запрос в сервис парсера.</p>
+<p>Клиент взаимодействует только с основным API, а логика парсинга выполняется в отдельном контейнере.</p>
+<pre><code class="language-python">@router.post(&quot;/queue&quot;)
+async def enqueue_parser_task(request: ParseQueueRequest) -&gt; dict:
+    task = parse_url_task.delay(str(request.url))
+
+    return {
+        &quot;task_id&quot;: task.id,
+        &quot;status&quot;: &quot;queued&quot;,
+    }
+</code></pre>
+<p>Обновлённый docker-compose файл</p>
+<pre><code class="language-yaml">version: &quot;3.9&quot;
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - &quot;5432:5432&quot;
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: hackathon_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U postgres -d postgres&quot;]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - &quot;6379:6379&quot;
+
+  api:
+    build:
+      context: ./lr_1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - &quot;8080:8000&quot;
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: &quot;true&quot;
+      CREATE_TABLES_ON_STARTUP: &quot;true&quot;
+      PARSER_SERVICE_URL: http://scraper:8000
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      scraper:
+        condition: service_started
+
+  scraper:
+    build:
+      context: ./lr_2/task_2
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - &quot;8001:8001&quot;
+    environment:
+      DATABASE_URL: postgresql://postgres:123@db:5432/hackathon_db
+      DEBUG: &quot;true&quot;
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: ./lr_1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: &quot;true&quot;
+      CREATE_TABLES_ON_STARTUP: &quot;false&quot;
+      PARSER_SERVICE_URL: http://scraper:8001
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      scraper:
+        condition: service_started
+
+volumes:
+  db_data:
+</code></pre>
+<h2 id="3-fastapi">Задача 3: Вызов парсера из FastAPI через очередь</h2>
+<p>Дополнительно был реализован асинхронный вариант запуска парсера через очередь задач.</p>
+<p>Основное приложение создаёт задачу Celery, задача помещается в Redis, а Celery worker забирает её из очереди и выполняет обращение к сервису парсера.</p>
+<pre><code class="language-python">celery_app = Celery(
+    &quot;hackathon_parser_queue&quot;,
+    broker=os.getenv(&quot;CELERY_BROKER_URL&quot;, &quot;redis://localhost:6379/0&quot;),
+    backend=os.getenv(&quot;CELERY_RESULT_BACKEND&quot;, &quot;redis://localhost:6379/1&quot;),
+    include=[&quot;app.tasks.parser_tasks&quot;],
+)
+
+celery_app.conf.update(
+    task_track_started=True,
+    task_serializer=&quot;json&quot;,
+    result_serializer=&quot;json&quot;,
+    accept_content=[&quot;json&quot;],
+)
+</code></pre>
+<h2 id="_1">Результат</h2>
+<p>В результате лабораторной работы было создано контейнеризированное приложение из нескольких сервисов. Основное FastAPI-приложение может вызывать парсер напрямую по HTTP или асинхронно через очередь задач Celery с использованием Redis.
+Такой подход упрощает развёртывание приложения, разделяет ответственность между сервисами и позволяет выполнять длительные операции в фоне.</p>
 
 
 

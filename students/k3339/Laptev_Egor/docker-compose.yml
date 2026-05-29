@@ -1,0 +1,85 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: hackathon_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./lr_1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: "true"
+      CREATE_TABLES_ON_STARTUP: "true"
+      PARSER_SERVICE_URL: http://scraper:8000
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      scraper:
+        condition: service_started
+
+  scraper:
+    build:
+      context: ./lr_2/task_2
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://postgres:123@db:5432/hackathon_db
+      DEBUG: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: ./lr_1
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:123@db:5432/hackathon_db
+      DEBUG: "true"
+      CREATE_TABLES_ON_STARTUP: "false"
+      PARSER_SERVICE_URL: http://scraper:8001
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      scraper:
+        condition: service_started
+
+volumes:
+  db_data:
